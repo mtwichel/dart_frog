@@ -11,7 +11,7 @@ class RequestContext {
 
   /// Provide the value returned by [create] to the respective
   /// request context.
-  RequestContext provide<T extends Object>(T Function() create) {
+  RequestContext provide<T extends Object>(FutureOr<T> Function() create) {
     return RequestContext._(
       request._request.change(
         context: {...request._request.context, '$T': create},
@@ -23,7 +23,7 @@ class RequestContext {
   ///
   /// A [StateError] is thrown if [T] is not available within the
   /// provided [request] context.
-  T read<T>() {
+  Future<T> read<T>() async {
     final value = request._request.context['$T'];
     if (value == null) {
       throw StateError(
@@ -40,6 +40,6 @@ This can happen if $T was not provided to the request context:
 ''',
       );
     }
-    return (value as T Function())();
+    return await (value as FutureOr<T> Function())();
   }
 }
